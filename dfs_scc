@@ -1,0 +1,59 @@
+# read in data file 
+with open('test.txt') as f:
+    data_set_u = []
+    data_set_v = []
+    for ln in f:
+        if len(ln) > 1:
+            u, v = ln.split()
+            u = int(u)
+            v = int(v)
+            data_set_u.append(u)
+            data_set_v.append(v)
+f.close()
+
+#define DSF LOOP and DSF
+def DFS(list1, list2, node):
+    global t
+    visited[node-1] = True
+    leader[node-1] = s
+    arc = []
+    arc = [list2[i] for i, x in enumerate(list1) if x == node]
+    for i in arc:
+        if visited[i-1] == False:
+            DFS(list1, list2, i)
+    t += 1
+    f[node-1] = t
+
+def DFS_loop(list1, list2):
+    num = max(list1+list2)
+    global t, s, visited, leader, f
+    t = 0
+    s = None 
+    visited = [False] * num
+    leader = [None] * num
+    f = [None] *num
+    
+    for i in range(num, 0, -1):
+        if visited[i-1] == False:
+            DFS(list1, list2, i)
+            
+## run DFS_loop two times, one on original dataset
+DFS_loop(data_set_u, data_set_v)
+
+## reverse tail and head to get reversed dataset
+rev_u, rev_v = data_set_v, data_set_u
+new_u = [None] * (len(rev_u))
+new_v = [None] * (len(rev_v))
+for i, val in enumerate(f):
+    for i_v, i_val in enumerate(rev_v):
+        if i_val == i+1:
+            new_v[i_v] = val 
+    for i_u, i_val in enumerate(rev_u):
+        if i_val == i+1:
+            new_u[i_u] = val   
+            
+## run DFS_loop two times, the other one reversed dataset            
+DFS_loop(new_u, new_v)
+
+## output leader and frequency
+[(i,leader.count(i)) for i in set(leader) ]
