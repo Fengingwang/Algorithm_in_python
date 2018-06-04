@@ -1,0 +1,33 @@
+with open('dijkstraData.txt') as f:
+    lines = f.readlines()
+    x = [line.split()[0] for line in lines]
+    y = [line.split()[1:] for line in lines]
+    dataog = []
+    for i in range(len(x)):   
+        for j in range(len(y[i])):
+            dataog.append( (int(x[i]), int(y[i][j].split(',')[0]), int(y[i][j].split(',')[1])) )              
+f.close()
+from collections import defaultdict
+from heapq import *
+
+def dijkstra(edges, f, t):
+    g = defaultdict(list)
+    for start_node, end_node, length_edge in edges:
+        g[start_node].append((length_edge, end_node))
+
+    q, seen = [(0,f,())], set()
+    while q:
+        (cost,v1,path) = heappop(q)
+        if v1 not in seen:
+            seen.add(v1)
+            path = (v1, path)
+            if v1 == t: return (cost, path)
+
+            for c, v2 in g.get(v1, ()):
+                if v2 not in seen:
+                    heappush(q, (cost+c, v2, path))
+
+    return float("inf")
+print("=== Dijkstra ===")
+for i in [7, 37, 59, 82, 99, 115, 133, 165, 188, 197]: 
+    print(dijkstra(dataog, 1, i))
