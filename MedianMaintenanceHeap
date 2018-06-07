@@ -1,0 +1,48 @@
+# Implement the "Median Maintenance" algorithm 
+# The text file contains a list of the integers from 1 to 10000 in unsorted order, treat this as a stream of numbers arriving one by one
+# Letting xi denote the ith number of the file, the kth median mk is defined as the median of the numbers x1,…,xk 
+# if k is odd, then mk is ((k+1)/2)th smallest number among x1,…,xk; 
+# if k is even, then mk is the (k/2)th smallest number among x1,…,xk
+# compute (m1+m2+m3+⋯+m10000) mod 10000
+
+import heapq
+heap_low = None # holds the lower numbers in negative value to be able to extract the highest
+heap_high = None # holds the highest numbers
+
+def MedianMaintenance_init():
+    global heap_low, heap_high
+    heap_low = []
+    heap_high = []
+
+def MedianMaintenance_insert(x):
+    # heappop function always Pop and return the smallest item from the heap, so push num into heaphi but num * -1 into heaplo
+    global heap_low, heap_high
+    if (len(heap_low) == 0):
+        heapq.heappush(heap_low, -x)
+    else:
+        m = -heap_low[0]
+        if x > m:
+            heapq.heappush(heap_high, x)
+            if len(heap_high) > len(heap_low):
+                y = heapq.heappop(heap_high)
+                heapq.heappush(heap_low, -y)
+        else:
+            heapq.heappush(heap_low, -x)
+            if len(heap_low) - len(heap_high) > 1:
+                y = -heapq.heappop(heap_low)
+                heapq.heappush(heap_high, y)
+    return -heap_low[0]
+
+def main():
+    NUMLIST_FILENAME = "Median.txt" 
+    MedianMaintenance_init()
+    medians = []
+    with open(NUMLIST_FILENAME, 'r') as f:
+        for integers in f.readlines():
+            num = int(integers.strip()) 
+            median = MedianMaintenance_insert(num)
+            medians.append(median)
+    print(reduce(lambda x,y: (x+y) % 10000, medians))
+
+if __name__ == '__main__':
+    main()
