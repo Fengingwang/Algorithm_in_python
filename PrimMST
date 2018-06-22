@@ -1,0 +1,48 @@
+# Prim Algorithm using networkx
+
+from pqdict import PQDict
+def prim(G,start):
+    """Function recives a graph and a starting node, and returns a MST"""
+    stopN = G.number_of_nodes() - 1
+    current = start
+    closedSet = set()
+    pq = PQDict()
+    mst = []
+
+    while len(mst) < stopN:
+        for node in G.neighbors(current):
+            if node not in closedSet and current not in closedSet:
+                if (current,node) not in pq and (node,current) not in pq:
+                    w = G.edge[current][node]['weight']
+                    pq.additem((current,node), w)
+
+        closedSet.add(current)
+
+        tup, wght = pq.popitem()
+        while(tup[1] in closedSet):
+            tup, wght = pq.popitem()
+        mst.append(tup)
+        current = tup[1]
+
+    return mst
+
+
+# testing 
+G=nx.Graph()
+G.add_edge('A','B',weight=3)
+G.add_edge('A','D',weight=5)
+G.add_edge('A','E',weight=9)
+G.add_edge('B','C',weight=5)
+G.add_edge('B','D',weight=4)
+G.add_edge('B','E',weight=8)
+G.add_edge('C','D',weight=7)
+G.add_edge('C','G',weight=3)
+G.add_edge('D','F',weight=8)
+G.add_edge('D','G',weight=5)
+G.add_edge('D','H',weight=6)
+G.add_edge('E','F',weight=2)
+G.add_edge('F','H',weight=10)
+G.add_edge('G','I',weight=1)
+G.add_edge('H','I',weight=3)
+
+mst = prim(G,'A')
