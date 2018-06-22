@@ -1,0 +1,46 @@
+import sys
+import heapq
+from operator import itemgetter, attrgetter
+
+def greedyScheduling(fi, alg = "ratio"):
+  '''
+  Greedy Scheduling for Tasks
+  Parameters:
+    fi  - input file
+    alg - algorithm to use ("diff" or "ratio") 
+  '''
+  if not fi:
+    return "No input file"
+
+  jobs = []  
+  for line in fi:
+    task = map(int, line.split())
+    if alg is "ratio":  wlrate = float(task[0]) / float(task[1])
+    elif alg is "diff": wlrate = task[0] - task[1]
+    else:               return "Invalid Algorithm"
+    jobs.append([wlrate, task[0], task[1]])
+
+  jobs = sorted(jobs,key = lambda x:(x[0],x[1]))
+  jobs = jobs[-1::-1]#inverse, decreasing order
+
+  comptime = accumtime = 0
+  for job in jobs:
+    accumtime += job[2]
+    comptime  += accumtime * job[1]
+
+  return comptime
+
+def p1():
+  print ("Greedy Scheduling Algorithm using W-L (Difference), decreasing order")
+  fi = open("jobs.txt", "r")
+  print ("Sum of weighted completion times: " , greedyScheduling(fi, "diff"))
+
+def p2():
+  print ("Greedy Scheduling Algorithm using W/L (Ratio)")
+  fi = open("jobs.txt", "r")
+  print ("Sum of weighted completion times: ", greedyScheduling(fi, "ratio"))
+
+
+if __name__ == "__main__":
+  p1()
+  p2()
